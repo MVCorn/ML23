@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.datasets import load_boston
 from sklearn.model_selection import train_test_split
 import pdb 
 from sklearn.tree import DecisionTreeRegressor
@@ -52,6 +51,7 @@ class RegressionStump():
         self.left = None
         self.right = None
         ### YOUR CODE HERE
+        
         ### END CODE
 
     def predict(self, X):
@@ -64,6 +64,14 @@ class RegressionStump():
         """
         pred = None
         ### YOUR CODE HERE
+        for p in X:
+            print(p.shape)
+            # if x[self.idx] < self.val:
+            #     return self.left
+            # elif x[self.id] <= self.val:
+            #     return self.right
+            # else:
+            #     return None
         ### END CODE
         return pred
     
@@ -78,6 +86,7 @@ class RegressionStump():
         """
         out = None
         ### YOUR CODE HERE
+
         ### END CODE
         return out
         
