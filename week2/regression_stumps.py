@@ -64,14 +64,15 @@ class RegressionStump():
         """
         pred = None
         ### YOUR CODE HERE
+
+        ### REMAKE TO NUMPY FUNCTION!
         for p in X:
-            print(p.shape)
-            # if x[self.idx] < self.val:
-            #     return self.left
-            # elif x[self.id] <= self.val:
-            #     return self.right
-            # else:
-            #     return None
+            if p[self.idx] < self.val:
+                return self.left
+            elif p[self.idx] <= self.val:
+                return self.right
+            else:
+                return None
         ### END CODE
         return pred
     
@@ -86,7 +87,7 @@ class RegressionStump():
         """
         out = None
         ### YOUR CODE HERE
-
+        self.predict(X)
         ### END CODE
         return out
         
