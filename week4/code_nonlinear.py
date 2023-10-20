@@ -87,7 +87,6 @@ class PerceptronClassifier():
         """
         score = 0 
         ### YOUR CODE HERE 1-3 lines
-
         ### END CODE
         return score
     

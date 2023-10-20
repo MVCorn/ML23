@@ -68,7 +68,6 @@ class LinearRegressor():
         pred = None
         newX = self.hardcode_bias(X)
         ### YOUR CODE HERE 1-2 lines
-
         ### END CODE
         return pred
 
