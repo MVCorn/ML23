@@ -195,6 +195,7 @@ class NetClassifier():
 
         
         ### YOUR CODE HERE
+        
         ### END CODE
         # hist dict should look like this with something different than none
         #hist = {'train_loss': None, 'train_acc': None, 'val_loss': None, 'val_acc': None}

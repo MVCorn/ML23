@@ -25,7 +25,28 @@ def softmax(X):
     res = np.zeros(X.shape)
     ### YOUR CODE HERE
     max = np.amax(X, axis=1)
+    # print("max = ", max)
 
+    # (log sum exp x-max) + max
+    minus1 = X - max[:, np.newaxis]
+    # print("minus1 = ", minus1)
+
+    exp = np.exp(minus1)
+    # print("exp = ", exp)
+
+    sum = np.sum(exp, axis=1)
+    # print("sum = ", sum)
+
+
+    lgDen = np.log(sum) + max
+    # print("lgDen = ", lgDen)
+
+    minus2 = X - lgDen[:, np.newaxis]
+    # print("minus2 = ", minus2)
+
+    res = np.exp(minus2)
+    # print("res = ", res)
+        
     ### END CODE
     return res
 

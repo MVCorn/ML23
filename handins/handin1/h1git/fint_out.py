@@ -8,6 +8,8 @@ if __name__ == '__main__':
     y[1] = 10
     y[2] = 20
 
+    print(X)
+    print()
     print(X.shape[0])
     print()
     print(X.shape[1])
