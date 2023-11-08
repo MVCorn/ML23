@@ -38,6 +38,27 @@ def softmax(X):
     """
     res = np.zeros(X.shape)
     ### YOUR CODE HERE
+    max = np.amax(X, axis=1)
+    # print("max = ", max)
+
+    # (log sum exp x-max) + max
+    minus1 = X - max[:, np.newaxis]
+    # print("minus1 = ", minus1)
+
+    exp = np.exp(minus1)
+    # print("exp = ", exp)
+
+    sum = np.sum(exp, axis=1)
+    # print("sum = ", sum)
+
+    lgDen = np.log(sum) + max
+    # print("lgDen = ", lgDen)
+
+    minus2 = X - lgDen[:, np.newaxis]
+    # print("minus2 = ", minus2)
+
+    res = np.exp(minus2)
+    # print("res = ", res)
     ### END CODE
     return res
 
@@ -51,6 +72,7 @@ def relu(x):
         Beware of np.max and look at np.maximum
     """
     ### YOUR CODE HERE
+    res = np.maximum(0, x)
     ### END CODE
     return res
 
@@ -96,6 +118,11 @@ class NetClassifier():
             params = self.params
         pred = None
         ### YOUR CODE HERE
+        tmp1 = X @ params['W1'] + params['b1']
+        tmp2 = relu(tmp1)
+        tmp3 = tmp2 @ params['W2'] + params['b2']
+        pred = np.argmax(tmp3, axis=1)
+        print('pred = ', pred)
         ### END CODE
         return pred
      
@@ -114,6 +141,17 @@ class NetClassifier():
             params = self.params
         acc = None
         ### YOUR CODE HERE
+        n, _ = X.shape
+        pred = self.predict(X, params)
+        print('pred = ', pred)
+        print('y = ', y)
+        tmp = pred == y
+        print('tmp = ', tmp)
+        sum = np.sum(tmp)
+        print('sum = ', sum)
+        acc = sum/n
+        print('acc = ', acc)
+
         ### END CODE
         return acc
     
@@ -153,9 +191,25 @@ class NetClassifier():
         labels = one_in_k_encoding(y, W2.shape[1]) # shape n x k
                         
         ### YOUR CODE HERE - FORWARD PASS - compute cost with weight decay and store relevant values for backprop
+        a = X @ W1 
+        b = a + b1
+        d = relu(b)
+        e = d @ W2
+        f = e + b2
+        
         ### END CODE
         
         ### YOUR CODE HERE - BACKWARDS PASS - compute derivatives of all weights and bias, store them in d_w1, d_w2, d_b1, d_b2
+        print('(b > 0) = ', (b > 0))
+        
+        d_w1 = X.T @ (b > 0)
+        print('d_w1 = ', d_w1)
+        d_w2 = d
+        print('d_w2 = ', d_w2)
+        d_b1 = W2
+        print('d_b1 = ', d_b1)
+        d_b2 = 1
+        print('d_b2 = ', d_b2)
         ### END CODE
         # the return signature
         return cost, {'d_w1': d_w1, 'd_w2': d_w2, 'd_b1': d_b1, 'd_b2': d_b2}
@@ -195,7 +249,29 @@ class NetClassifier():
 
         
         ### YOUR CODE HERE
-        
+        n, d = X_train.shape
+        for e in range(epochs):
+            r = range(0, n)
+            permut = np.random.permutation(r)
+            X_epoch = X_train[permut, :]
+            y_epoch = y_train[permut]
+            for b in range(0, n, batch_size):
+                X_batch = X_epoch[b: b + batch_size, :]
+                y_batch = y_epoch[b: b + batch_size]
+
+                cost, grad = self.cost_grad(X_batch, y_batch, make_dict(W1, b1, W2, b2))
+                W1 -= lr * grad['d_w1']
+                b1 -= lr * grad['d_b1']
+                W2 -= lr * grad['d_w2']
+                b2 -= lr * grad['d_b2']
+                self.params(make_dict(W1, b1, W2, b2))
+            train_loss, _ = self.cost_grad(X_train, y_train, make_dict(W1, b1, W2, b2))
+            train_acc = self.score(X_train, y_train)
+            val_loss, _ = self.cost_grad(X_val, y_val, make_dict(W1, b1, W2, b2))
+            val_acc = self.score(X_val, y_val)
+
+            hist = {'train_loss': train_loss, 'train_acc': train_acc, 'val_loss': val_loss, 'val_acc': val_acc}
+            self.params(make_dict(W1, b1, W2, b2))
         ### END CODE
         # hist dict should look like this with something different than none
         #hist = {'train_loss': None, 'train_acc': None, 'val_loss': None, 'val_acc': None}
@@ -257,6 +333,23 @@ def test_grad():
     numerical_grad_check(f, params['W1'], 'd_w1')
     print('Test Success')
 
+def maja_test():
+    stars = '*'*5
+    print(stars, 'Test singular functions')
+    input_dim = 3
+    hidden_size = 5
+    output_size = 4
+    batch_size = 7
+    nc = NetClassifier()
+    params = get_init_params(input_dim, hidden_size, output_size)
+    X = np.random.randn(batch_size, input_dim)
+    Y = np.array([0, 1, 2, 0, 1, 2, 0])
+    nc.predict(X, params)
+    nc.score(X, Y, params)
+
+    
+
+
 if __name__ == '__main__':
     input_dim = 3
     hidden_size = 5
@@ -267,4 +360,5 @@ if __name__ == '__main__':
     X = np.random.randn(batch_size, input_dim)
     Y = np.array([0, 1, 2, 0, 1, 2, 0])
     nc.cost_grad(X, Y, params, c=0)
+    maja_test()
     test_grad()
